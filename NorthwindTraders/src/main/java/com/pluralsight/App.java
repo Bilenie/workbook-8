@@ -5,13 +5,24 @@ import java.sql.*;
 public class App {
 
     public static void main(String[] args) {
+        if (args.length != 2) {
+            System.out.println(
+                    "Application needs two arguments to run: " +
+                            "java com.pluralsight.UsingDriverManager <username> <password>"
+            );
+            System.exit(1);//quite the program if we don't have 2 argument
+        }
+
+        //get the username and password from the command line args
+        String username = args[0];
+        String password = args[1];
 
         Connection connection;//initialize connection variable to connect with DB.
 
         try{
 
             //connecting to the northwind DB.
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/northwind", "root", "yearup");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/northwind", username, password);
 
             //This like opening a new query window
             Statement statement = connection.createStatement();
