@@ -17,7 +17,7 @@ public class App {
             Statement statement = connection.createStatement();
 
             //the actual query
-            String query ="SELECT * FROM products";
+            String query ="SELECT ProductName FROM products";
 
 
             //Running the query
