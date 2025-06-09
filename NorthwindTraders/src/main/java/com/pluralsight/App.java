@@ -4,7 +4,10 @@ import java.sql.*;
 
 public class App {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+
+        //Mkaing sure we passed in 2 argument from the cli when we run the app.
+        //page 45
         if (args.length != 2) {
             System.out.println(
                     "Application needs two arguments to run: " +
@@ -17,38 +20,39 @@ public class App {
         String username = args[0];
         String password = args[1];
 
-        Connection connection;//initialize connection variable to connect with DB.
+        //load the driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
 
-        try{
+        //create the connection and prepared statement
+        Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/northwind", username,password
+        );
 
-            //connecting to the northwind DB.
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/northwind", username, password);
+        //Start our prepared statement
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT ProductName FROM products WHERE ProductID = ?"
+        );
 
-            //This like opening a new query window
-            Statement statement = connection.createStatement();
+        //set the parameter for the prepared statement
+        preparedStatement.setInt(1,14);
 
-            //the actual query
-            String query ="SELECT ProductName FROM products";
+      // preparedStatement.setString(1,"Sa%");
 
+        // execute the query
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            //Running the query
-            ResultSet results = statement.executeQuery(query);
-
-
-            // this is a way to view the result set but java doesn't have a spreadsheet view for us
-            while (results.next()) {
-                String ProductName = results.getString("ProductName"); // change it to fit the question
-                System.out.println(ProductName); // this show what we want to display
+            // loop through the results
+            while (resultSet.next()) {
+                System.out.printf(
+                        "productName = %s\n",
+                        resultSet.getString(1)
+                ); // this show what we want to display
             }
 
             // 3. Close the connection
+            resultSet.close();
+            preparedStatement.close();
             connection.close();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
     }
 
 }
