@@ -6,7 +6,7 @@ public class App {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        //Mkaing sure we passed in 2 argument from the cli when we run the app.
+        //Making sure we passed in 2 argument from the CLI when we run the app.
         //page 45
         if (args.length != 2) {
             System.out.println(
