@@ -115,10 +115,6 @@ public class NorthwindPreparedStatement {
         // execute the query Run the command and get back a list of products (the result set)
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        // Print a header row
-        System.out.printf("%-5s %-30s %-8s %-6s\n", "Id", "Name", "Price", "Stock");
-        System.out.println("----- ------------------------------ -------- ------");
-
         printResultSet(resultSet);
 
         resultSet.close();
