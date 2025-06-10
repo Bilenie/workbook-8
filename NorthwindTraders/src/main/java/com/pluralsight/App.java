@@ -3,56 +3,69 @@ package com.pluralsight;
 import java.sql.*;
 
 public class App {
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-
-        //Making sure we passed in 2 argument from the CLI when we run the app.
-        //page 45
+    public static void main(String[] args) throws ClassNotFoundException {
         if (args.length != 2) {
             System.out.println(
                     "Application needs two arguments to run: " +
-                            "java com.pluralsight.UsingDriverManager <username> <password>"
-            );
-            System.exit(1);//quite the program if we don't have 2 argument
+                            "java com.hca.jdbc.UsingDriverManager <username> " +
+                            "<password>");
+            System.exit(1);
         }
 
-        //get the username and password from the command line args
+        // get the user name and password from the command line args
         String username = args[0];
         String password = args[1];
 
-        //load the driver
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        // Establish the variables with null outside the try scope
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-        //create the connection and prepared statement
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username,password
-        );
+        try {
+            // create the connection and prepared statement
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/sakila", username, password);
+            preparedStatement = connection.prepareStatement(
+                    "SELECT first_name, last_name FROM customer " +
+                            "WHERE last_name LIKE ? ORDER BY first_name");
 
-        //Start our prepared statement
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT ProductName FROM products WHERE ProductID = ?"
-        );
+            // set the parameters for the prepared statement
+            preparedStatement.setString(1, "Sa%");
 
-        //set the parameter for the prepared statement
-        preparedStatement.setInt(1,14);
+            // execute the query
+            resultSet = preparedStatement.executeQuery();
 
-      // preparedStatement.setString(1,"Sa%");
-
-        // execute the query
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-            // loop through the results
+            // loop thru the results
             while (resultSet.next()) {
-                System.out.printf(
-                        "productName = %s\n",
-                        resultSet.getString(1)
-                ); // this show what we want to display
+                // process the data
+                System.out.printf("first_name = %s, last_name = %s;\n",
+                        resultSet.getString(1), resultSet.getString(2));
             }
-
-            // 3. Close the connection
-            resultSet.close();
-            preparedStatement.close();
-            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // close the resources
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
-
 }
