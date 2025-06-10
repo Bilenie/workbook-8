@@ -32,8 +32,6 @@ public class NorthwindPreparedStatement {
 
         try {
 
-            Scanner myScanner = new Scanner(System.in);
-
             System.out.println(".｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡.");
             System.out.println("｡                                          ｡");
             System.out.println("｡     ♡ Welcome to DATA ON DATABASE ♡    ｡");
@@ -123,17 +121,6 @@ public class NorthwindPreparedStatement {
 
         printResultSet(resultSet);
 
-
-        //  Go through each product in the list, one at a time //getmethod data and get column count
-//        while (resultSet.next()) {
-//            int id = resultSet.getInt("ProductID");
-//            String name = resultSet.getString("ProductName");
-//            double price = resultSet.getDouble("UnitPrice");
-//            int stock = resultSet.getInt("UnitsInStock");
-//
-//            // Print product info in a neat row
-//            System.out.printf("%-5d %-30s %-8.2f %-6d\n", id, name, price, stock); // this show what we want to display
-//        }
         resultSet.close();
         preparedStatement.close();
         connection.close();
@@ -157,15 +144,6 @@ public class NorthwindPreparedStatement {
 
         //  Go through each row in the list, one at a time
          printResultSet(resultSet);//taking the result set and taking the metadata . loop over the result set and metadata knows the column name
-       /* while (resultSet.next()) {
-            String name = resultSet.getString("ContactName");
-            String companyName = resultSet.getString("CompanyName");
-            String city = resultSet.getString("City");
-            String country = resultSet.getString("Country");
-
-            // Print product info in a neat row
-            System.out.printf("%s %s %s %s\n", name, companyName, city, country); // this show what we want to display
-        }*/
         //closing the connection
         resultSet.close();
         preparedStatement.close();
@@ -251,14 +229,3 @@ public class NorthwindPreparedStatement {
     }
 
 }
-
-
-/* connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/sakila", username, password);
-            preparedStatement = connection.prepareStatement(
-                    "SELECT first_name, last_name FROM customer " +
-                            "WHERE last_name LIKE ? ORDER BY first_name");
-
-            // set the parameters for the prepared statement
-            preparedStatement.setString(1, "Sa%");
-*/
