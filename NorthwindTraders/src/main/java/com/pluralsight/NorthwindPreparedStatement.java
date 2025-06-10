@@ -34,9 +34,23 @@ public class NorthwindPreparedStatement {
 
             Scanner myScanner = new Scanner(System.in);
 
-            System.out.println("What do you want to do?");
-            System.out.println("Select an option please :\n" +
-                    " (1)Display all product \n 2)Display all customer \n 0) Exit");
+            System.out.println(".｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡.");
+            System.out.println("｡                                          ｡");
+            System.out.println("｡     ♡ Welcome to DATA ON DATABASE ♡    ｡");
+            System.out.println("｡              ~  SQL ~               ｡");
+            System.out.println("｡                                          ｡");
+            System.out.println(".｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡.\n");
+
+            System.out.println("✧✦✧✦✧✦✧✦✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✦✧");
+            System.out.println("         What do you want to do?     ");
+            System.out.println("✧✦✧✦✧✦✧✦✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✦✧");
+
+
+            System.out.println("｡･:*:･ﾟ★,｡･:*:･ﾟ☆ Select an option please ☆･ﾟ:*:･｡,★･ﾟ:*:･｡");
+            System.out.println("        1)Display all product");
+            System.out.println("        2)Display all customer");
+            System.out.println("        0) Exit");
+            System.out.println("｡･:*:･ﾟ★,｡･:*:･ﾟ☆･ﾟ:*:･｡★｡･ﾟ:*:･ﾟ☆･ﾟ");
 
             String choice = myScanner.nextLine();
 
@@ -77,28 +91,6 @@ public class NorthwindPreparedStatement {
             throw new RuntimeException(e);
         }
 //        } finally {
-//            // close the resources
-//            if (resultSet != null) {
-//                try {
-//                    resultSet.close();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            if (preparedStatement != null) {
-//                try {
-//                    preparedStatement.close();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            if (connection != null) {
-//                try {
-//                    connection.close();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
     }
 
     public static void getAllProducts(String username, String password) throws SQLException {
