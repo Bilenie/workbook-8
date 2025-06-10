@@ -5,7 +5,10 @@ import java.util.Scanner;
 
 public class NorthwindPreparedStatement {
 
+
+    public static Scanner myScanner = new Scanner(System.in);
     public static void main(String[] args) {
+
 
         //Making sure we passed in 2 argument from the CLI when we run the app.
         //page 45
@@ -46,6 +49,7 @@ public class NorthwindPreparedStatement {
                 System.out.println("｡･:*:･ﾟ★,｡･:*:･ﾟ☆ Select an option please ☆･ﾟ:*:･｡,★･ﾟ:*:･｡");
                 System.out.println("        1)Display all product");
                 System.out.println("        2)Display all customer");
+                System.out.println("        3)Display all categories");
                 System.out.println("        0) Exit");
                 System.out.println("｡･:*:･ﾟ★,｡･:*:･ﾟ☆･ﾟ:*:･｡★｡･ﾟ:*:･ﾟ☆･ﾟ");
 
@@ -54,13 +58,17 @@ public class NorthwindPreparedStatement {
                 switch (choice) {
                     case "1" -> getAllProducts(username, password);
                     case "2" -> getAllCustomers(username, password);
+                    case "3" -> {
+                        getAllCategories(username, password);
+                        getProductByCategories(username, password);
+                    }
                     case "0" -> {
                         System.out.println("Goodbye!");
                         System.exit(0);// exit
                     }
                     default -> System.out.println(" Invalid, try again!");
                 }
-                System.out.println("\n:*:･ﾟ★, Press Enter to return to menu...:*:･ﾟ★,");
+                System.out.println("\n:*:･ﾟ★ Press Enter to return to menu...:*:･ﾟ★,");
                 myScanner.nextLine();
             }} catch(SQLException e){
                 throw new RuntimeException(e);
@@ -113,17 +121,19 @@ public class NorthwindPreparedStatement {
         System.out.printf("%-5s %-30s %-8s %-6s\n", "Id", "Name", "Price", "Stock");
         System.out.println("----- ------------------------------ -------- ------");
 
+        printResultSet(resultSet);
+
 
         //  Go through each product in the list, one at a time //getmethod data and get column count
-        while (resultSet.next()) {
-            int id = resultSet.getInt("ProductID");
-            String name = resultSet.getString("ProductName");
-            double price = resultSet.getDouble("UnitPrice");
-            int stock = resultSet.getInt("UnitsInStock");
-
-            // Print product info in a neat row
-            System.out.printf("%-5d %-30s %-8.2f %-6d\n", id, name, price, stock); // this show what we want to display
-        }
+//        while (resultSet.next()) {
+//            int id = resultSet.getInt("ProductID");
+//            String name = resultSet.getString("ProductName");
+//            double price = resultSet.getDouble("UnitPrice");
+//            int stock = resultSet.getInt("UnitsInStock");
+//
+//            // Print product info in a neat row
+//            System.out.printf("%-5d %-30s %-8.2f %-6d\n", id, name, price, stock); // this show what we want to display
+//        }
         resultSet.close();
         preparedStatement.close();
         connection.close();
@@ -141,45 +151,114 @@ public class NorthwindPreparedStatement {
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT ContactName,CompanyName,City,Country,Phone FROM customers ORDER BY Country"
         );
+
         // execute the query Run the command and get back a list of products (the result set)
         ResultSet resultSet = preparedStatement.executeQuery();
-        printResultSet(resultSet);//taking the result set and taking the metadata . loop over the result set and metadata knows the column name
-
-        // Print a header row
-        System.out.printf("%-5s %-30s %-8s %-6s\n", "Name", "CompanyName", "City", "Country");
-        System.out.println("----- ------------------------------ -------- ------");
 
         //  Go through each row in the list, one at a time
-        while (resultSet.next()) {
+         printResultSet(resultSet);//taking the result set and taking the metadata . loop over the result set and metadata knows the column name
+       /* while (resultSet.next()) {
             String name = resultSet.getString("ContactName");
             String companyName = resultSet.getString("CompanyName");
             String city = resultSet.getString("City");
             String country = resultSet.getString("Country");
 
             // Print product info in a neat row
-            System.out.printf("%-5d %-30s %-8.2f %-6d\n", name, companyName, city, country); // this show what we want to display
-        }
+            System.out.printf("%s %s %s %s\n", name, companyName, city, country); // this show what we want to display
+        }*/
         //closing the connection
         resultSet.close();
         preparedStatement.close();
         connection.close();
 
     }
+
+    public static void getAllCategories(String username, String password)throws SQLException{
+
+        //Connect to the database server with my password and username
+        Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/northwind", username, password
+        );
+
+        //query to grab the row data from the customer table
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT CategoryID,CategoryName FROM categories ORDER BY CategoryID"
+        );
+
+        ResultSet resultSet = preparedStatement.executeQuery();//run the query
+
+        printResultSet(resultSet); //display the query
+
+        //closing the connection
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+    }
+
+    public static void getProductByCategories(String username, String password)throws SQLException{
+
+        //Connect to the database server with my password and username
+        Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/northwind", username, password
+        );
+
+        //query to grab the row data from the customer table
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT ProductName,ProductID, UnitPrice, UnitsInStock, CategoryID FROM products  WHERE CategoryID = ? "
+        );
+
+        //Prompt the user to choose from the display categories
+        System.out.println("enter your category Id : \n");
+        String categoryChoice = myScanner.nextLine();
+
+        // set the parameters for the prepared statement
+        preparedStatement.setString(1, categoryChoice);// replace it with categoryChoice of usere
+
+        ResultSet resultSet = preparedStatement.executeQuery();//run the query
+
+        printResultSet(resultSet); //display the query
+
+        //closing the connection
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+    }
+
+
     public static void printResultSet(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
 
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
-                String columnName = metaData.getColumnName(i);
-                String value = rs.getString(i); // generic, works for most types
-                System.out.print(columnName + ": " + value + "  ");
+                System.out.printf("%-30s", metaData.getColumnName(i)); // 20 characters wide
             }
             System.out.println(); // new line after each row
+
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print("=".repeat(28));
+            }
+            System.out.println();
+
+            for(int i = 1;i<=columnCount;i++){
+                String value = rs.getString(i); // generic, works for most types
+                System.out.printf("%-30s",value);
+            }
+            System.out.println();
         }
     }
 
 }
 
 
+/* connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/sakila", username, password);
+            preparedStatement = connection.prepareStatement(
+                    "SELECT first_name, last_name FROM customer " +
+                            "WHERE last_name LIKE ? ORDER BY first_name");
 
+            // set the parameters for the prepared statement
+            preparedStatement.setString(1, "Sa%");
+*/
