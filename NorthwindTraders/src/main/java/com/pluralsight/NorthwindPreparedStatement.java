@@ -1,5 +1,7 @@
 package com.pluralsight;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import java.sql.*;
 import java.util.Scanner;
 
@@ -7,6 +9,10 @@ public class NorthwindPreparedStatement {
 
 
     public static Scanner myScanner = new Scanner(System.in);
+
+   public static BasicDataSource dataSource = new BasicDataSource();
+
+    // Configure the datasource
 
     public static void main(String[] args) {
 
@@ -25,6 +31,11 @@ public class NorthwindPreparedStatement {
         //get the username and password from the command line args
         String username = args[0];
         String password = args[1];
+
+        dataSource.setUrl("jdbc:mysql://localhost:3306/northwind");
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+
 
 
         // ( Connection connection = null; PreparedStatement preparedStatement = null; ResultSet resultSet = null)
@@ -56,11 +67,11 @@ public class NorthwindPreparedStatement {
                 String choice = myScanner.nextLine();
 
                 switch (choice) {
-                    case "1" -> getAllProducts(username, password);
-                    case "2" -> getAllCustomers(username, password);
+                    case "1" -> getAllProducts();
+                    case "2" -> getAllCustomers();
                     case "3" -> {
-                        getAllCategories(username, password);
-                        getProductByCategories(username, password);
+                        getAllCategories();
+                        getProductByCategories();
                     }
                     case "0" -> {
                         pauseBeforeContinuing(1000);
@@ -80,15 +91,13 @@ public class NorthwindPreparedStatement {
 
     }
 
-    public static void getAllProducts(String username, String password) throws SQLException {
+    public static void getAllProducts() throws SQLException {
 
         //SELECT * FROM products
         //Connect to the database server with my password and username
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username, password)
-        ) {
+        try (Connection connection = dataSource.getConnection()) {
             //query to grab the row data from the customer table
-            String sql = "SELECT * FROM products";// if it's safe or not idk
+            String sql = "SELECT * FROM products";// if it's safe
             PreparedStatement preparedStatement = connection.prepareStatement(sql
             );
 
@@ -103,15 +112,14 @@ public class NorthwindPreparedStatement {
             System.out.println(sqlException.getLocalizedMessage());
 
         }
+
     }
 
-    public static void getAllCustomers(String username, String password) throws SQLException {
+    public static void getAllCustomers() throws SQLException {
 
         //SELECT ContactName,CompanyName,City,Country,Phone FROM customer ORDER BY Country
         //Connect to the database server with my password and username
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username, password)
-        ) {
+        try (Connection connection = dataSource.getConnection()) {
             //query to grab the row data from the customer table
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT ContactName,CompanyName,City,Country,Phone FROM customers ORDER BY Country"
@@ -131,12 +139,10 @@ public class NorthwindPreparedStatement {
         }
     }
 
-    public static void getAllCategories(String username, String password) throws SQLException {
+    public static void getAllCategories() throws SQLException {
 
         //Connect to the database server with my password and username
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username, password
-        )) {
+        try (Connection connection = dataSource.getConnection()) {
 
             //query to grab the row data from the customer table
             PreparedStatement preparedStatement = connection.prepareStatement(
@@ -154,12 +160,10 @@ public class NorthwindPreparedStatement {
         }
     }
 
-    public static void getProductByCategories(String username, String password) throws SQLException {
+    public static void getProductByCategories() throws SQLException {
 
         //Connect to the database server with my password and username
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username, password
-        )) {
+        try (Connection connection = dataSource.getConnection()) {
             //query to grab the row data from the customer table
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "SELECT ProductName,ProductID, UnitPrice, UnitsInStock, CategoryID FROM products  WHERE CategoryID = ? "
