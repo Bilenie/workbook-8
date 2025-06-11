@@ -7,6 +7,7 @@ public class NorthwindPreparedStatement {
 
 
     public static Scanner myScanner = new Scanner(System.in);
+
     public static void main(String[] args) {
 
 
@@ -26,13 +27,9 @@ public class NorthwindPreparedStatement {
         String password = args[1];
 
 
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        // ( Connection connection = null; PreparedStatement preparedStatement = null; ResultSet resultSet = null)
 
         try {
-
-            Scanner myScanner = new Scanner(System.in);
 
             System.out.println(".｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡.");
             System.out.println("｡                                          ｡");
@@ -40,13 +37,16 @@ public class NorthwindPreparedStatement {
             System.out.println("｡              ~  SQL ~               ｡");
             System.out.println("｡                                          ｡");
             System.out.println(".｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡..｡*♡*｡.\n");
+            pauseBeforeContinuing(1000);
 
             System.out.println("✧✦✧✦✧✦✧✦✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✦✧");
             System.out.println("         What do you want to do?     ");
             System.out.println("✧✦✧✦✧✦✧✦✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✧✦✦✧");
+            pauseBeforeContinuing(1000);
 
             while (true) {
                 System.out.println("｡･:*:･ﾟ★,｡･:*:･ﾟ☆ Select an option please ☆･ﾟ:*:･｡,★･ﾟ:*:･｡");
+                pauseBeforeContinuing(1000);
                 System.out.println("        1)Display all product");
                 System.out.println("        2)Display all customer");
                 System.out.println("        3)Display all categories");
@@ -63,202 +63,172 @@ public class NorthwindPreparedStatement {
                         getProductByCategories(username, password);
                     }
                     case "0" -> {
+                        pauseBeforeContinuing(1000);
                         System.out.println("Goodbye!");
                         System.exit(0);// exit
                     }
                     default -> System.out.println(" Invalid, try again!");
                 }
+                pauseBeforeContinuing(1000);
                 System.out.println("\n:*:･ﾟ★ Press Enter to return to menu...:*:･ﾟ★,");
                 myScanner.nextLine();
-            }} catch(SQLException e){
-                throw new RuntimeException(e);
-            } finally{
-                try {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-
-                }
-                try {
-                    if (preparedStatement != null) {
-                        preparedStatement.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-
-                }
-                try {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-
-                }
-
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+    // finally{ no need for finally now we use try resource method down below on the methods
 
+    }
 
     public static void getAllProducts(String username, String password) throws SQLException {
 
         //SELECT * FROM products
         //Connect to the database server with my password and username
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username, password
-        );
-        //query to grab the row data from the customer table
-        String sql = "SELECT * FROM products";// if it's safe or not idk
-        PreparedStatement preparedStatement = connection.prepareStatement(sql
-        );
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/northwind", username, password)
+        ) {
+            //query to grab the row data from the customer table
+            String sql = "SELECT * FROM products";// if it's safe or not idk
+            PreparedStatement preparedStatement = connection.prepareStatement(sql
+            );
 
-        // execute the query Run the command and get back a list of products (the result set)
-        ResultSet resultSet = preparedStatement.executeQuery();
+            // execute the query Run the command and get back a list of products (the result set)
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        // Print a header row
-        System.out.printf("%-5s %-30s %-8s %-6s\n", "Id", "Name", "Price", "Stock");
-        System.out.println("----- ------------------------------ -------- ------");
+            printResultSet(resultSet);
 
-        printResultSet(resultSet);
+            //No need to close the connection try resource method did that automatically for us
 
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getLocalizedMessage());
 
-        //  Go through each product in the list, one at a time //getmethod data and get column count
-//        while (resultSet.next()) {
-//            int id = resultSet.getInt("ProductID");
-//            String name = resultSet.getString("ProductName");
-//            double price = resultSet.getDouble("UnitPrice");
-//            int stock = resultSet.getInt("UnitsInStock");
-//
-//            // Print product info in a neat row
-//            System.out.printf("%-5d %-30s %-8.2f %-6d\n", id, name, price, stock); // this show what we want to display
-//        }
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
-
+        }
     }
 
     public static void getAllCustomers(String username, String password) throws SQLException {
 
         //SELECT ContactName,CompanyName,City,Country,Phone FROM customer ORDER BY Country
         //Connect to the database server with my password and username
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind", username, password
-        );
-        //query to grab the row data from the customer table
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT ContactName,CompanyName,City,Country,Phone FROM customers ORDER BY Country"
-        );
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/northwind", username, password)
+        ) {
+            //query to grab the row data from the customer table
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT ContactName,CompanyName,City,Country,Phone FROM customers ORDER BY Country"
+            );
 
-        // execute the query Run the command and get back a list of products (the result set)
-        ResultSet resultSet = preparedStatement.executeQuery();
+            // execute the query Run the command and get back a list of products (the result set)
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-        //  Go through each row in the list, one at a time
-         printResultSet(resultSet);//taking the result set and taking the metadata . loop over the result set and metadata knows the column name
-       /* while (resultSet.next()) {
-            String name = resultSet.getString("ContactName");
-            String companyName = resultSet.getString("CompanyName");
-            String city = resultSet.getString("City");
-            String country = resultSet.getString("Country");
+            //  Go through each row in the list, one at a time by calling this method
+            printResultSet(resultSet);//taking the result set and taking the metadata . loop over the result set and metadata knows the column name
 
-            // Print product info in a neat row
-            System.out.printf("%s %s %s %s\n", name, companyName, city, country); // this show what we want to display
-        }*/
-        //closing the connection
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
+            //No need to close the connection try resource method did that automatically for us
 
+        } catch (SQLException sqlException) {
+            System.out.println(sqlException.getLocalizedMessage());
+            sqlException.printStackTrace();
+        }
     }
 
-    public static void getAllCategories(String username, String password)throws SQLException{
+    public static void getAllCategories(String username, String password) throws SQLException {
 
         //Connect to the database server with my password and username
-        Connection connection = DriverManager.getConnection(
+        try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/northwind", username, password
-        );
+        )) {
 
-        //query to grab the row data from the customer table
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT CategoryID,CategoryName FROM categories ORDER BY CategoryID"
-        );
+            //query to grab the row data from the customer table
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT CategoryID,CategoryName FROM categories ORDER BY CategoryID"
+            );
 
-        ResultSet resultSet = preparedStatement.executeQuery();//run the query
+            ResultSet resultSet = preparedStatement.executeQuery();//run the query
 
-        printResultSet(resultSet); //display the query
+            printResultSet(resultSet); //display the query
 
-        //closing the connection
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
+            //No need to close the connection try resource method did that automatically for us
 
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
     }
 
-    public static void getProductByCategories(String username, String password)throws SQLException{
+    public static void getProductByCategories(String username, String password) throws SQLException {
 
         //Connect to the database server with my password and username
-        Connection connection = DriverManager.getConnection(
+        try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/northwind", username, password
-        );
+        )) {
+            //query to grab the row data from the customer table
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "SELECT ProductName,ProductID, UnitPrice, UnitsInStock, CategoryID FROM products  WHERE CategoryID = ? "
+            );
 
-        //query to grab the row data from the customer table
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT ProductName,ProductID, UnitPrice, UnitsInStock, CategoryID FROM products  WHERE CategoryID = ? "
-        );
+            boolean askAgain = true;
+            while (askAgain) {
 
-        //Prompt the user to choose from the display categories
-        System.out.println("enter your category Id : \n");
-        String categoryChoice = myScanner.nextLine();
+                pauseBeforeContinuing(1000);
 
-        // set the parameters for the prepared statement
-        preparedStatement.setString(1, categoryChoice);// replace it with categoryChoice of usere
+                //Prompt the user to choose from the display categories
+                System.out.println("enter your category Id : \n");
+                String categoryChoice = myScanner.nextLine();
 
-        ResultSet resultSet = preparedStatement.executeQuery();//run the query
 
-        printResultSet(resultSet); //display the query
+                if (!categoryChoice.matches("(?i)^(1|2|3|4|5|6|7|8)$")) {
+                    System.out.println("💔 Oops! That ID isn’t on the List. Please enter one from our categoryID list! 💕");
+                    continue;
+                }
 
-        //closing the connection
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
+            // set the parameters for the prepared statement
+            preparedStatement.setString(1, categoryChoice);// replace it with categoryChoice of usere
 
+            ResultSet resultSet = preparedStatement.executeQuery();//run the query
+
+            printResultSet(resultSet); //display the query
+                break;
+        }
+            //No need to close the connection try resource method did that automatically for us
+
+
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+            ;
+        }
     }
-
 
     public static void printResultSet(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
 
+
+        for (int i = 1; i <= columnCount; i++) {
+            // 25 characters wide
+            System.out.printf("%-25s", metaData.getColumnName(i));//outside the while loop => for not to repeat the column name.
+        }
+        System.out.println(); // new line after each row
         while (rs.next()) {
             for (int i = 1; i <= columnCount; i++) {
-                System.out.printf("%-30s", metaData.getColumnName(i)); // 20 characters wide
-            }
-            System.out.println(); // new line after each row
-
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.print("=".repeat(28));
+                System.out.print("=".repeat(25));
             }
             System.out.println();
 
-            for(int i = 1;i<=columnCount;i++){
+            for (int i = 1; i <= columnCount; i++) {
                 String value = rs.getString(i); // generic, works for most types
-                System.out.printf("%-30s",value);
+                System.out.printf("%-25s", value);
             }
             System.out.println();
         }
     }
 
+    // Waits for a specific time in milliseconds (like 2000 ms = 2 seconds).Then continues automatically.
+    public static void pauseBeforeContinuing(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            System.out.println("Pause interrupted.");
+        }
+
+    }
+
 }
-
-
-/* connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/sakila", username, password);
-            preparedStatement = connection.prepareStatement(
-                    "SELECT first_name, last_name FROM customer " +
-                            "WHERE last_name LIKE ? ORDER BY first_name");
-
-            // set the parameters for the prepared statement
-            preparedStatement.setString(1, "Sa%");
-*/
