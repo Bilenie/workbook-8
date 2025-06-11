@@ -125,7 +125,11 @@ while(true){
             throw new RuntimeException(e);
         }
     // finally{ no need for finally now we use try resource method down below on the methods
-
+        try {
+            dataSource.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Waits for a specific time in milliseconds (like 2000 ms = 2 seconds).Then continues automatically.
