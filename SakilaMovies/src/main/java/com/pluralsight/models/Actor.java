@@ -1,6 +1,5 @@
 package com.pluralsight.models;
 
-import java.time.LocalDateTime;
 
 public class Actor {
 
