@@ -1,5 +1,7 @@
 package com.pluralsight;
 
+import com.pluralsight.dao.SakilaDataManager;
+import com.pluralsight.userInterface.Ui;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 public class SakilaMovies {
@@ -10,7 +12,6 @@ public class SakilaMovies {
     // Configure the datasource
 
     public static void main(String[] args) {
-
 
         //Making sure we passed in 2 argument from the CLI when we run the app.
         //page 45
@@ -32,7 +33,11 @@ public class SakilaMovies {
         dataSource.setUsername(username);
         dataSource.setPassword(password);
 
+        // Pass dataSource to the DAO class
+        SakilaDataManager.dataSource = dataSource;
 
+        //calling my startApp method to start off my app.
+        Ui.startApp();
 
     }
 }

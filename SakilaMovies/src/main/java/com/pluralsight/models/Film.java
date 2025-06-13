@@ -20,8 +20,11 @@ public class Film {
         this.length = length;
     }
 
+    public Film(String title) {
+        this.title = title;
+    }
 
-    //Generate getter and setter
+//Generate getter and setter
 
     public int getFilm_id() {
         return film_id;
@@ -65,10 +68,7 @@ public class Film {
 
     @Override
     public String toString() {
-        return "🎬 Film ID: " + film_id +
-                "\nTitle: " + title +
-                "\nDescription: " + description +
-                "\nRelease Year: " + year +
-                "\nLength: " + length;
+        return "🎬 Film Title: " + title;
+
     }
 }
